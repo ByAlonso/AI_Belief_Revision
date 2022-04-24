@@ -16,10 +16,11 @@ if __name__ == '__main__':
         elif action == "add" or action == "1":
             new_belief = Belief(input())
             if new_belief.cnf_formula is not None:
-                belief_base.add(new_belief)
+                belief_base.revision(new_belief)
+            belief_base.display()
         elif action == "display" or action == "2":
-            pass
+            belief_base.display()
         elif action == "clear" or action == "3":
-            pass
+            belief_base.clear(True)
         else:
             print("Action not recognized, try again.")

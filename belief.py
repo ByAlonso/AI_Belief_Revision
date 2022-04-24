@@ -1,9 +1,9 @@
 from sympy import *
 class Belief:
     def __init__(self, formula):
-        self.create_belief(formula)
         self.formula = None
         self.cnf_formula = None
+        self.create_belief(formula)
 
     def create_belief(self,formula):
         try:
