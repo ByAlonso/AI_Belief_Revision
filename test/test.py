@@ -127,15 +127,63 @@ class TestSum(unittest.TestCase):
         belief_basse_2.extend(new_belief_2)
         B = [x.formula for x in belief_basse_2.belief_base]
         print(A,B)
-        self.assertEqual(A, '')
+        self.assertEqual(A, B)
 
     def test_revision_consistency(self):
-        belief_basse = BeliefBase([Belief('p'), Belief('q')])
-        new_belief = Belief('p>>~q')
+        belief_basse = BeliefBase([Belief('p'), Belief('q'), Belief('p>>q')])
+        new_belief = Belief('r')
         belief_basse.revision(new_belief)
-        A = [x.formula for x in belief_basse.belief_base]
-        print(A)
-        self.assertEqual(A, '')
+        # A = [x.formula for x in belief_basse.belief_base]
+        # print(A)
+        assert belief_basse.resolution(new_belief, belief_basse.belief_base)
+
+    def test_revision_extensionality(self):
+        belief_basse_1 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p'),Belief('p>>q'),Belief('r')])
+        belief_basse_2 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p'),Belief('p>>q'),Belief('r')])
+        new_belief_1 = Belief('q')
+        new_belief_2 = Belief('p')
+        belief_basse_1.revision(new_belief_1)
+        belief_basse_2.revision(new_belief_2)
+        solution_1 = [x.formula for x in belief_basse_1.belief_base]
+        solution_2 = [x.formula for x in belief_basse_2.belief_base]
+        self.assertEqual(solution_1,solution_2)
+
+    def test_revision_superexpansion(self):
+        belief_basse_1 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p'),Belief('r')])
+        belief_basse_2 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p'),Belief('r')])
+        new_belief_1 = Belief('q&p')
+        new_belief_2 = Belief('q')
+        new_belief_3 = Belief('p')
+        belief_basse_1.revision(new_belief_1)
+        belief_basse_2.revision(new_belief_2)
+        belief_basse_2.extend(new_belief_3)
+        A = set([x.formula for x in belief_basse_1.belief_base])
+        B = set([x.formula for x in belief_basse_2.belief_base])
+
+        print(A, B)
+        assert A.issubset(B)
+
+    def test_revision_subexpansion(self):
+        belief_basse_1 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p')])
+        belief_basse_2 = BeliefBase([Belief('p'),Belief('q'),Belief('q>>p')])
+        new_belief_1 = Belief('p&r')
+        new_belief_2 = Belief('p')
+        new_belief_3 = Belief('r')
+        not_belief_3 = Belief('~r')
+        belief_basse_1.revision(new_belief_2)
+
+        if not_belief_3.formula not in [x.formula for x in belief_basse_1.belief_base]:
+            belief_basse_1.extend(new_belief_3)
+            belief_basse_2.revision(new_belief_1)
+
+            A = set([x.formula for x in belief_basse_1.belief_base])
+            B = set([x.formula for x in belief_basse_2.belief_base])
+            print('aaaaaaaaaaaaaaaaaaa')
+            print(A, B)
+            assert A.issubset(B)
+        else:
+            print('¬ψ ∈ B ∗ φ')
+            assert False
 
 if __name__ == '__main__':
     unittest.main()
