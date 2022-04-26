@@ -86,7 +86,6 @@ class BeliefBase:
                     clauses.append(new_clause)
 
     def resolve(self,ci,cj):
-
         resolved_clauses = []
         sub_ci = [sci for sci in ci.split("|")]
         sub_cj = [scj for scj in cj.split("|")]
