@@ -1,15 +1,13 @@
-from sympy import to_cnf, Not
-
+from sympy import Not
 from belief import Belief
 from copy import copy
-import re
+
 class BeliefBase:
     def __init__(self, belief_base=None):
         if belief_base:
             self.belief_base = belief_base
         else:
             self.belief_base = []
-
 
     def revision(self,belief):
         self.contract(Belief(self.negate(belief.cnf_formula)))

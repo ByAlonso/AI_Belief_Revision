@@ -1,13 +1,8 @@
 from sympy import to_cnf, Not
 
 from belief import Belief
-from copy import copy, deepcopy
-import re
+from copy import copy
 
-#Just some testing I was doing yesterday
-#Just some testing I was doing yesterday
-#Just some testing I was doing yesterday
-#Just some testing I was doing yesterday
 class BeliefBase:
     def __init__(self, belief_base=None):
         if belief_base:
@@ -51,7 +46,6 @@ class BeliefBase:
 
     def resolution(self,belief_base,new_belief):
         new_belief_base = belief_base + [self.negate_belief(new_belief)]
-        #[print(x.cnf_formula,",") for x in new_belief_base]
         clauses = [str(belief.cnf_formula).replace(" ","").split("&") for belief in new_belief_base]
         clauses = [sc for c in clauses for sc in c]
         new = set()
@@ -60,11 +54,9 @@ class BeliefBase:
             for ci,cj in clauses_pair:
                 resolvents = self.resolve(ci,cj)
                 if '' in resolvents:
-                    #print("TRUE")
                     return True
                 new = new.union(set(resolvents))
             if new.issubset(clauses):
-                #print("FALSE")
                 return False
             clauses += [n for n in new if n not in clauses]
 
