@@ -17,7 +17,9 @@ class BeliefBase:
         self.extend(belief)
 
     def extend(self,belief):
-        self.belief_base.append(belief)
+        A = [x.formula for x in self.belief_base]
+        if belief.formula not in A:
+            self.belief_base.append(belief)
 
     def contract(self,new_belief):
         if not self.belief_base:
@@ -74,7 +76,7 @@ class BeliefBase:
             resolve_pairs = [(clauses[i],clauses[j]) for i in range(0,len(clauses)) for j in range(i+1,len(clauses))]
             for ci,cj in resolve_pairs:
                 result = self.resolve(ci,cj)
-                if '' in result:
+                if '' in result:   
                     return True
                 clauses_set = clauses_set.union(set(result))
 
@@ -83,7 +85,7 @@ class BeliefBase:
 
             for new_clause in clauses_set:
                 if new_clause not in clauses:
-                    clauses.append(new_clause)
+                    clauses.append(new_clause)         
 
     def resolve(self,ci,cj):
         resolved_clauses = []

@@ -51,7 +51,7 @@ class BeliefBase:
 
     def resolution(self,belief_base,new_belief):
         new_belief_base = belief_base + [self.negate_belief(new_belief)]
-        [print(x.cnf_formula,",") for x in new_belief_base]
+        #[print(x.cnf_formula,",") for x in new_belief_base]
         clauses = [str(belief.cnf_formula).replace(" ","").split("&") for belief in new_belief_base]
         clauses = [sc for c in clauses for sc in c]
         new = set()
@@ -60,11 +60,11 @@ class BeliefBase:
             for ci,cj in clauses_pair:
                 resolvents = self.resolve(ci,cj)
                 if '' in resolvents:
-                    print("TRUE")
+                    #print("TRUE")
                     return True
                 new = new.union(set(resolvents))
             if new.issubset(clauses):
-                print("FALSE")
+                #print("FALSE")
                 return False
             clauses += [n for n in new if n not in clauses]
 
