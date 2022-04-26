@@ -1,13 +1,13 @@
 import unittest
 from belief import *
-from belief_base import *
+from belief_base_2 import *
 
 class TestSum(unittest.TestCase):
     def test_contraction_closure(self):
         belief_basse = BeliefBase([Belief('p'),Belief('q'),Belief('p>>q'),Belief('r')])
         new_belief = Belief('q')
         belief_basse.contract(new_belief)
-        assert not belief_basse.resolution(new_belief,belief_basse.belief_base)
+        assert not belief_basse.resolution(belief_basse.belief_base,new_belief)
         #solution = [x.formula for x in belief_basse.belief_base]
         #self.assertEqual(['p>>q','r'],solution)
     def test_contraction_success(self):
@@ -126,8 +126,7 @@ class TestSum(unittest.TestCase):
         new_belief_2 = Belief('q')
         belief_basse_2.extend(new_belief_2)
         B = [x.formula for x in belief_basse_2.belief_base]
-        print(A,B)
-        self.assertEqual(A, '')
+        self.assertEqual(A, B)
 
     def test_revision_consistency(self):
         belief_basse = BeliefBase([Belief('p'), Belief('q')])

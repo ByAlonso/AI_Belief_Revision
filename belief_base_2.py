@@ -8,7 +8,7 @@ import re
 #Just some testing I was doing yesterday
 #Just some testing I was doing yesterday
 #Just some testing I was doing yesterday
-class BeliefBase2:
+class BeliefBase:
     def __init__(self, belief_base=None):
         if belief_base:
             self.belief_base = belief_base
@@ -16,67 +16,42 @@ class BeliefBase2:
             self.belief_base = []
 
     def revision(self,belief):
-        self.contract(self.negate_belief(belief))
-        print("adding new belief {}".format(belief.formula))
-        self.extend(belief)
+        if belief.cnf_formula not in [x.cnf_formula for x in self.belief_base]:
+            self.contract(self.negate_belief(belief))
+            print("adding new belief {}".format(belief.formula))
+            self.extend(belief)
 
     def extend(self,belief):
-        self.belief_base.append(belief)
+        if belief.cnf_formula not in [x.cnf_formula for x in self.belief_base]:
+            self.belief_base.append(belief)
         [print(x.formula) for x in self.belief_base]
 
     def contract(self,new_belief):
         if not self.belief_base:
             return
-        contradiction = True
-        queue = [deepcopy(self.belief_base)]
-
-        while contradiction:
-            possible_belief_bases = []
-            contradiction = False
+        con_new_belief = new_belief
+        new_belief_base = None
+        queue = [self.belief_base]
+        current_belief_base = ['I AM FILLED']
+        while new_belief_base is None and current_belief_base:
             current_belief_base = queue.pop(0)
-            print("CURRENT",current_belief_base)
             for b in current_belief_base:
-                if self.resolution(current_belief_base,new_belief):
-                    print("SOY CONCHA ENTRO")
-                    aux_belief_base = deepcopy(current_belief_base)
-                    print("PRE")
-                    [print(x.formula) for x in aux_belief_base]
+                if self.resolution(current_belief_base,con_new_belief):
+                    aux_belief_base = copy(current_belief_base)
                     aux_belief_base = [bb for bb in aux_belief_base if bb.cnf_formula != b.cnf_formula]
-                    print("POST")
-                    [print(x.formula) for x in aux_belief_base]
                     queue.append(aux_belief_base)
-                    contradiction = True
                 else:
-                    possible_belief_bases.append(current_belief_base)
+                    new_belief_base = current_belief_base
                     break
-            print(len(queue))
-            if len(queue) > 0:
-                alternative_belief_base = queue.pop(0)
-                while len(alternative_belief_base) == len(possible_belief_bases[0]):
-                    possible_belief_bases.append(alternative_belief_base)
-                    if len(queue) > 0:
-                        alternative_belief_base = queue.pop(0)
-                    else:
-                        break
-
-            if possible_belief_bases == []:
-                self.clear(False)
-                return
-
-            #Need plausability thingy
-            self.belief_base = possible_belief_bases[0]
-            print(self.belief_base)
-
-
-
-        '''if new_belief_base is not None:
+        if new_belief_base is not None:
             self.belief_base = new_belief_base
         else:
             self.clear(False)
-            return'''
+            return
 
     def resolution(self,belief_base,new_belief):
         new_belief_base = belief_base + [self.negate_belief(new_belief)]
+        [print(x.cnf_formula,",") for x in new_belief_base]
         clauses = [str(belief.cnf_formula).replace(" ","").split("&") for belief in new_belief_base]
         clauses = [sc for c in clauses for sc in c]
         new = set()
@@ -102,7 +77,7 @@ class BeliefBase2:
                 if to_cnf(sci) == self.negate_cnf(scj) or to_cnf(scj) == self.negate_cnf(sci): #I think the or is redundant
                     split_ci_ = [x for x in split_ci if x != sci]
                     split_cj_ = [x for x in split_cj if x != scj]
-                    result = split_ci_ + split_cj_
+                    result = list(set(split_ci_ + split_cj_))
                     final_result.append('|'.join(result))
         return final_result
 
